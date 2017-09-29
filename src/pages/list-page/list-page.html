@@ -1,0 +1,25 @@
+<ion-header>
+
+  <ion-navbar color="primary">
+    <ion-title>List</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+
+  <ion-list no-lines>
+    <ion-item *ngFor="let location of locations.data">
+      <ion-avatar item-left>
+        <ion-icon name="pin"></ion-icon>
+      </ion-avatar>
+      <h3>{{location.title}}</h3>
+      <p>{{location.distance}} miles</p>
+      <button ion-button large clear item-end (click)="openModal(location)">
+        <ion-icon name="ios-car"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+
+</ion-content>

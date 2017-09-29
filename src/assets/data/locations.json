@@ -1,0 +1,22 @@
+{
+  "locations": [
+    {
+      "title": "Dolmen Mall",
+      "latitude": 24.877005,
+      "longitude": 67.062402,
+      "url": "assets/m1.png"
+    },
+    {
+      "title": "Burger Lab",
+      "latitude": 24.877913,
+      "longitude": 67.067065,
+      "url": "assets/m2.png"
+    },
+    {
+      "title": "Jheel Park",
+      "latitude": 24.870060,
+      "longitude": 67.062842,
+      "url": "assets/m3.png"
+    }
+  ]
+}
