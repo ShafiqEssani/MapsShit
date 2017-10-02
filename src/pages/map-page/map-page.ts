@@ -1,6 +1,6 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
-import { IonicPage, Platform } from 'ionic-angular';
+import { IonicPage, LoadingController, Platform } from 'ionic-angular';
 
 import { GoogleMaps } from '../../providers/google-maps';
 import { Locations } from '../../providers/locations';
@@ -18,60 +18,89 @@ export class MapPage {
   constructor(private platform: Platform,
     private maps: GoogleMaps,
     private locations: Locations,
-    private geolocation: Geolocation) {
+    private geolocation: Geolocation,
+    private loadingController: LoadingController) {
   }
+
+  lat: any;
+  lng: any;
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad MapPage');
 
-    this.platform.ready().then(() => {
-
-      //let mapLoaded = this.maps.init(this.mapElement.nativeElement, this.pleaseConnect.nativeElement);
-
-      let mapLoaded = this.maps.initMap(this.mapElement.nativeElement)
-
-      // this.geolocation.getCurrentPosition()
-      //   .then((position) => {
-      //     console.log("position", position.coords);
-      //     // this.lat = position.coords.latitude;
-      //     // this.lng = position.coords.longitude;
-
-      //     //console.log(this.lat, this.lng);
-      //     //return (position.coords.latitude, position.coords.longitude);
-      //     // this.origin.lat = position.coords.latitude;
-      //     // this.origin.lng = position.coords.longitude;
-      //     //this.maps.addMarker("You're here", "assets/marker.png", position.coords.latitude, position.coords.longitude);
-
-      //   }).catch((error) => {
-      //     console.log('Error getting location', error);
-      //   });
-
-      this.maps.addMarker("You're here", "assets/marker.png", 24.873805, 67.067272);
-      let locationsLoaded = this.locations.load();
-
-      //console.log("maps: ", mapLoaded);
-
-      Promise.all([
-        mapLoaded,
-        locationsLoaded
-      ]).then((result) => {
-        //console.log("maps: ", mapLoaded);
-
-        console.log("result: ", result);
-
-        let locations: any = result[1];
-
-        for (let location of locations) {
-          console.log("loc", location);
-
-          this.maps.addMarker(location.title, location.url, location.latitude, location.longitude);
-        }
+    this.getLocation();
 
 
-      });
+    // this.platform.ready().then(() => {
+    // });
 
+  }
+
+  mainFunction() {
+    let mapLoaded = this.maps.initMap(this.mapElement.nativeElement)
+
+    this.lat = localStorage.getItem('latitude');
+    this.lng = localStorage.getItem('longitude');
+    console.log(this.lat, this.lng);
+    this.maps.addMarker("You're here", "assets/marker.png", this.lat, this.lng);
+    let locationsLoaded = this.locations.load();
+
+    Promise.all([
+      mapLoaded,
+      locationsLoaded
+    ]).then((result) => {
+      let locations: any = result[1];
+      for (let location of locations) {
+        this.maps.addMarker(location.title, location.url, location.latitude, location.longitude);
+      }
     });
 
   }
+
+  getLocation() {
+
+    let loader = this.loadingController.create({
+      content: 'Fetching location',
+      spinner: 'bubbles'
+    });
+
+    loader.present().then(() => {
+
+      this.geolocation.getCurrentPosition({
+        maximumAge: 3000,
+        timeout: 5000,
+        enableHighAccuracy: true
+      }).then((position) => {
+
+        localStorage.setItem('latitude', position.coords.latitude.toFixed(3).toString());
+        localStorage.setItem('longitude', position.coords.longitude.toFixed(3).toString());
+
+        loader.dismiss();
+        this.mainFunction();
+
+      }).catch((error) => {
+        console.log('Error getting location', error);
+        loader.dismiss();
+      });
+    });
+  }
+
+  // ionViewWillEnter() {
+  //   console.log("ionViewWillEnter");
+  // }
+
+  // ionViewDidEnter() {
+  //   console.log("ionViewDidEnter");
+  // }
+
+  // ionViewWillLeave() {
+  //   console.log("ionViewWillLeave");
+  // }
+
+  // ionViewDidLeave() {
+  //   console.log("ionViewDidLeave");
+  // }
+
+
 
 }

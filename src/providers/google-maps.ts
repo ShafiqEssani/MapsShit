@@ -2,6 +2,7 @@ import 'rxjs/add/operator/map';
 
 import { Injectable } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation';
+import { Events } from 'ionic-angular';
 
 declare var google;
 
@@ -12,49 +13,26 @@ export class GoogleMaps {
   mapElement: any;
   markers: any = [];
   map: any;
-  // lat: any;
-  // lng: any;
-  //  latLng: any;
-  // originLat: 
+  lat: number;
+  lng: number;
 
-  constructor(private geolocation: Geolocation) {
+
+  constructor(private geolocation: Geolocation,
+    private events: Events) {
     console.log('Hello GoogleMaps Provider');
+
   }
 
-  // getLocation(): any {
-
-  //   this.geolocation.getCurrentPosition()
-  //     .then((position) => {
-  //       console.log("position", position.coords.latitude);
-  //       this.lat = position.coords.latitude;
-  //       this.lng = position.coords.longitude;
-
-  //       //console.log(this.lat, this.lng);
-  //       return (position.coords.latitude, position.coords.longitude);
-  //       // this.origin.lat = position.coords.latitude;
-  //       // this.origin.lng = position.coords.longitude;
-
-  //     }).catch((error) => {
-  //       console.log('Error getting location', error);
-  //     });
-  // }
-
   initMap(mE): Promise<any> {
+
+    this.lat = parseFloat(localStorage.getItem('latitude'));
+    this.lng = parseFloat(localStorage.getItem('longitude'));
+    console.log("service:", typeof (this.lat), this.lng);
 
     return new Promise((resolve) => {
       this.mapElement = mE;
 
-      // UNCOMMENT FOR NORMAL USE
-      //let latLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      //this.getLocation()
-
-      // this.geolocation.getCurrentPosition({ maximumAge: 3000, timeout: 5000, enableHighAccuracy: true })
-      //   .then((position) => {
-      //     console.log("position", position.coords);
-      //     // this.lat = position.coords.latitude;
-      // this.lng = position.coords.longitude;
-
-      let latLng = new google.maps.LatLng(24.873805, 67.067272);
+      let latLng = new google.maps.LatLng(this.lat, this.lng);
       //console.log("this:", latLng);
 
       let mapOptions = {
@@ -66,27 +44,7 @@ export class GoogleMaps {
       this.map = new google.maps.Map(this.mapElement, mapOptions);
       resolve(true);
       console.log("map loaded");
-
-      //console.log(this.lat, this.lng);
-      // return (position.coords.latitude, position.coords.longitude);
-      // this.origin.lat = position.coords.latitude;
-      // this.origin.lng = position.coords.longitude;
-
     })
-    // .catch((error) => {
-    //     console.log('Error getting location', error);
-    //   });
-
-    // let points = this.getLocation();
-    // console.log(points);
-
-    //console.log(this.lat, this.lng);
-
-    //this.latLng = new google.maps.LatLng(24.873805, 67.067272);
-    //this.addMarker(24.873805, 67.067272);
-
-    //});
-
   }
 
   addMarker(name, url, lat: number, lng: number): void {
@@ -129,7 +87,7 @@ export class GoogleMaps {
 
   }
 
-  startNavigating(dp, lat, lng) {
+  startNavigating(dp, lat: number, lng: number) {
 
 
     //let directionsPanel = dp;
@@ -141,7 +99,7 @@ export class GoogleMaps {
     directionsDisplay.setPanel(dp);
 
     directionsService.route({
-      origin: { lat: 24.873805, lng: 67.067272 }, //24.873805, 67.067272
+      origin: { lat: this.lat, lng: this.lng }, //24.873805, 67.067272
       destination: { lat: lat, lng: lng }, //24.873576, 67.066860
       travelMode: google.maps.TravelMode['DRIVING']
     }, (res, status) => {

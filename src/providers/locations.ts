@@ -2,7 +2,6 @@ import 'rxjs/add/operator/map';
 
 import { Injectable } from '@angular/core';
 import { Http } from '@angular/http';
-import { Geolocation } from '@ionic-native/geolocation';
 
 @Injectable()
 export class Locations {
@@ -11,25 +10,15 @@ export class Locations {
   lat: any;
   lng: any;
 
-  constructor(private http: Http,
-    private geolocation: Geolocation) {
+  constructor(private http: Http) {
     console.log('Hello Locations Provider');
-
-    // this.geolocation.getCurrentPosition()
-    //   .then((position) => {
-    //     console.log("position", position.coords.latitude);
-    //     this.lat = position.coords.latitude;
-    //     this.lng = position.coords.longitude;
-    //     //console.log(this.lat, this.lng);
-    //     //return (position.coords.latitude, position.coords.longitude);
-    //     // this.origin.lat = position.coords.latitude;
-    //     // this.origin.lng = position.coords.longitude;
-    //   }).catch((error) => {
-    //     console.log('Error getting location', error);
-    //   });
   }
 
   load() {
+    console.log("im loaded");
+
+    this.lat = localStorage.getItem('latitude');
+    this.lng = localStorage.getItem('longitude');
 
     if (this.data) {
       return Promise.resolve(this.data);
@@ -52,13 +41,11 @@ export class Locations {
   }
 
   applyHaversine(locations) {
-    // console.log(this.lat);
-    // console.log(this.lng);
 
     let usersLocation = {
       //must be your current location
-      lat: 24.873805,
-      lng: 67.067272
+      lat: this.lat,
+      lng: this.lng
     };
 
     locations.map((location) => {

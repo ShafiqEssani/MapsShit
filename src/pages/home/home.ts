@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 
+
 @IonicPage()
 @Component({
   selector: 'page-home',
@@ -17,5 +18,6 @@ export class Home {
   ionViewDidLoad() {
     console.log('ionViewDidLoad Home');
   }
+
 
 }
